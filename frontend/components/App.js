@@ -19,45 +19,34 @@ export default class App extends React.Component {
 
   componentDidMount(){
     axios.get(URL)
-    .then(res => this.setState({todoList: res.data.data}))
+    .then(res => {this.setState({todoList: res.data.data})})
   }
 
   submitHandler = e => {
     e.preventDefault()
     axios.post(URL,{
       name: this.state.nameBuilder,
-      id: this.state.idGenerator,
-      key: this.state.idGenerator,
       completed: false
-    }).then(res => this.setState({todoList: res.data.data}))
-
-    // this.setState({todoList: [...this.state.todoList,{
-    //   name:this.state.nameBuilder,
-    //   id: this.state.idGenerator,
-    //   key: this.state.idGenerator,
-    //   completed: false
-    // }]})
-    // this.setState({idGenerator: this.state.idGenerator += 1})
-  }
+    }).then(res => {
+    console.log(res.data.data)
+    this.setState({todoList: [...this.state.todoList,res.data.data]})
+  })}
 
   onInputChange = (e) => {
     this.setState({nameBuilder: e.target.value})
-    console.log(this.state.nameBuilder)
   }
 
   toDoItemClickHandler = (e) => {
-    let updatedItems = [...this.state.todoList]
-    updatedItems.forEach(item => {
-      if(item.id == e.target.id){
-        item.completed = !item.completed
-      }})
-    this.setState({todoList: updatedItems})
-    console.log(this.state.todoList)
+    console.log(e.target)
+    const selectedItem = 
+    //filter to find 'completed' state based on id, change backend 'completed' based on front end filtering
+    axios.patch(URL+`/${e.target.id}`,{completed: !e.target.completed})
   }
 
   toggleButtonClickHandler = () => {
     this.setState({isHidden: !this.state.isHidden})
     console.log(this.state.isHidden)
+    console.log(this.state.todoList)
   }
 
   render() {
@@ -65,10 +54,10 @@ export default class App extends React.Component {
       <div>
         {/* filter list based on isHidden */}
         <TodoList todoList={this.state.isHidden ? this.state.todoList.filter(el => !el.completed) : this.state.todoList} itemClickHandler={this.toDoItemClickHandler}></TodoList>
-        <Form 
+        <Form
         isHidden={this.state.isHidden}
-        toggleButtonClickHandler={this.toggleButtonClickHandler} 
-        submitHandler={this.submitHandler} 
+        toggleButtonClickHandler={this.toggleButtonClickHandler}
+        submitHandler={this.submitHandler}
         inputChangeHandler={this.onInputChange}/>
       </div>
     )
