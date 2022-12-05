@@ -37,10 +37,15 @@ export default class App extends React.Component {
   }
 
   toDoItemClickHandler = (e) => {
-    console.log(e.target)
-    const selectedItem = 
+    const updatedItems = [...this.state.todoList]
+    const selectedItem = this.state.todoList.filter(el => e.target.id == el.id)[0]
     //filter to find 'completed' state based on id, change backend 'completed' based on front end filtering
-    axios.patch(URL+`/${e.target.id}`,{completed: !e.target.completed})
+    axios.patch(URL+`/${e.target.id}`,{completed: !selectedItem.completed})
+    .then( res => updatedItems.forEach(el => {
+      if(res.data.data.id == el.id){
+        el.completed = !el.completed
+      }}))
+      .then(res => this.setState({todoList: updatedItems}))
   }
 
   toggleButtonClickHandler = () => {
